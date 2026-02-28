@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面談結果入力 | OPT-IN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+    .g-btn{background:linear-gradient(90deg,#F7931E 0%,#E84A8A 50%,#A855F7 100%)}
+    .g-badge{background:linear-gradient(135deg,#F7931E 0%,#E84A8A 50%,#A855F7 100%)}
+    .g-bar{background:linear-gradient(90deg,#F7931E 0%,#E84A8A 50%,#A855F7 100%)}
+    .hidden{display:none!important}
+    .sel{border-color:#E84A8A!important;background-color:#fdf2f8!important}
+    .sel-g{border-color:#10B981!important;background-color:#ecfdf5!important}
+    .sel-b{border-color:#3B82F6!important;background-color:#eff6ff!important}
+    .sel-a{border-color:#F59E0B!important;background-color:#fffbeb!important}
+    .sel-r{border-color:#EF4444!important;background-color:#fef2f2!important}
+    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:9999}
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- ローディング -->
+  <div id="loading" class="loading-overlay">
+    <div class="text-center">
+      <svg class="animate-spin h-10 w-10 mx-auto mb-4 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="text-gray-600">読み込み中...</p>
+    </div>
+  </div>
+
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-2xl mx-auto px-4 py-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm g-badge">O</div>
+        <div>
+          <h1 class="text-lg font-bold text-gray-900">面談結果入力</h1>
+          <p class="text-xs text-gray-500">Sales Management System v11</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white border-b border-gray-100">
+    <div class="max-w-2xl mx-auto px-4 py-3">
+      <div class="flex items-center gap-2">
+        <div class="flex-1"><div class="h-1.5 rounded-full g-bar" id="p1"></div></div>
+        <div class="flex-1"><div class="h-1.5 rounded-full bg-gray-200" id="p2"></div></div>
+        <div class="flex-1"><div class="h-1.5 rounded-full bg-gray-200" id="p3"></div></div>
+        <div class="flex-1"><div class="h-1.5 rounded-full bg-gray-200" id="p4"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto px-4 py-6">
+    <div id="ok" class="hidden mb-6 p-5 bg-white rounded-2xl border border-emerald-200 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900">登録完了</p>
+          <p class="text-sm text-gray-500" id="okMsg">データが正常に保存されました</p>
+        </div>
+      </div>
+      <button onclick="reset()" class="mt-4 w-full py-3 text-white font-medium rounded-xl g-btn hover:opacity-90">新規入力を開始</button>
+    </div>
+
+    <form id="f" class="space-y-4">
+      <!-- 顧客検索 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold g-badge">1</div>
+          <h2 class="font-semibold text-gray-900">顧客情報</h2>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">顧客ID <span class="text-pink-500">*</span></label>
+            <div class="flex gap-2">
+              <input type="text" id="cid" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="例：GH01-000001">
+              <button type="button" onclick="srch()" id="sbtn" class="px-5 py-2.5 text-white font-medium rounded-xl g-btn hover:opacity-90">検索</button>
+            </div>
+          </div>
+          <div id="cinfo" class="hidden p-3 bg-gray-50 rounded-xl border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div id="cav" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium g-badge"></div>
+              <div class="flex-1">
+                <p id="cname" class="font-semibold text-gray-900"></p>
+                <p id="cline" class="text-sm text-gray-500"></p>
+              </div>
+              <span id="ctype" class="text-xs px-2 py-1 rounded-full"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- フェーズ選択 -->
+      <div id="sec2" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:linear-gradient(135deg,#E84A8A 0%,#A855F7 100%)">2</div>
+          <h2 class="font-semibold text-gray-900">入力フェーズを選択</h2>
+        </div>
+        <div class="space-y-2" id="phases">
+          <div class="ph flex items-center gap-4 p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50 hover:border-gray-200" data-ph="reappointment" onclick="selPh('reappointment')">
+            <span class="text-2xl">📅</span>
+            <div class="flex-1"><p class="font-medium text-gray-900">再アポ日程登録</p><p class="text-sm text-gray-500">日程の再調整</p></div>
+          </div>
+          <div class="ph flex items-center gap-4 p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50 hover:border-gray-200" data-ph="result" onclick="selPh('result')">
+            <span class="text-2xl">📝</span>
+            <div class="flex-1"><p class="font-medium text-gray-900">面談結果登録</p><p class="text-sm text-gray-500">面談後の結果入力</p></div>
+          </div>
+          <div class="ph flex items-center gap-4 p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50 hover:border-gray-200" data-ph="convert_to_closed" onclick="selPh('convert_to_closed')">
+            <span class="text-2xl">🎉</span>
+            <div class="flex-1"><p class="font-medium text-gray-900">成約変更</p><p class="text-sm text-gray-500">言質・検討中→成約に変更</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 再アポ日程 -->
+      <div id="secRe" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h2 class="font-semibold text-gray-900 mb-4">📅 再アポ日程</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1.5">日付 <span class="text-pink-500">*</span></label><input type="date" id="reD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1.5">時間 <span class="text-pink-500">*</span></label><input type="time" id="reT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+        </div>
+      </div>
+
+      <!-- 成約変更 -->
+      <div id="secConv" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-4">🎉 成約変更</h2>
+          <p class="text-sm text-gray-500 mb-4">言質・検討中から成約に変更します</p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">提案商品 <span class="text-pink-500">*</span></label>
+              <div id="convPrds" class="space-y-4">
+                <!-- 動的に生成 -->
+              </div>
+            </div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">契約日 <span class="text-pink-500">*</span></label><input type="date" id="convContD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">決済手段 <span class="text-pink-500">*</span></label><div class="grid grid-cols-2 gap-2" id="convPay"></div><div id="convPayO" class="hidden mt-3"><input type="text" id="convPayOT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="決済手段を入力"></div></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">締結済契約書リンク <span class="text-pink-500">*</span></label><input type="text" id="convLink" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="https://..."><p id="convLinkE" class="hidden mt-1.5 text-sm text-red-500">⚠ https://で始まる正しいURLを入力してください</p></div>
+            <!-- ★ 領収書（成約変更時）追加 -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">領収書の必要有無 <span class="text-pink-500">*</span></label>
+              <div class="grid grid-cols-2 gap-2" id="convReceiptOpts">
+                <div class="convReceipt flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selConvReceipt('不要')"><span class="font-medium text-sm">不要</span></div>
+                <div class="convReceipt flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selConvReceipt('必要')"><span class="font-medium text-sm">必要</span></div>
+              </div>
+              <p class="mt-2 text-xs text-gray-500">※必要な場合は、LINEに登録されているアドレス宛にお送りします</p>
+            </div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">CSへの引き継ぎ事項</label><textarea id="convHand" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="3" placeholder="引き継ぎ事項があれば入力"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 面談結果 -->
+      <div id="secRes" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-4">基本情報</h2>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1.5">ふりがな</label><input type="text" id="furi" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="やまだ たろう"><p id="furiE" class="hidden mt-1.5 text-sm text-red-500">⚠ ひらがなで入力してください</p></div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-4">実施可否</h2>
+          <div class="grid grid-cols-2 gap-2" id="exOpts">
+            <div class="ex flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selEx('cancel')"><span class="font-medium text-sm">キャンセル</span></div>
+            <div class="ex flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selEx('reschedule_pending')"><span class="font-medium text-sm">リスケ（調整中）</span></div>
+            <div class="ex flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selEx('reschedule_confirmed')"><span class="font-medium text-sm">リスケ（確定）</span></div>
+            <div class="ex flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selEx('executed')"><span class="font-medium text-sm">実施</span></div>
+          </div>
+        </div>
+
+        <div id="secResch" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-4">リスケ日程</h2>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">日付 <span class="text-pink-500">*</span></label><input type="date" id="reschD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1.5">時間 <span class="text-pink-500">*</span></label><input type="time" id="reschT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+          </div>
+        </div>
+
+        <!-- 実施時 -->
+        <div id="secExec" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 class="font-semibold text-gray-900 mb-4">提案商品</h2>
+            <div id="prds" class="space-y-4">
+              <!-- 動的に生成 -->
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 class="font-semibold text-gray-900 mb-4">面談結果</h2>
+            <div class="grid grid-cols-2 gap-2" id="resOpts">
+              <div class="res flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-r="closed" onclick="selRes('closed')"><span class="font-semibold">成約</span><span class="text-xs text-gray-400 mt-0.5">契約書締結済</span></div>
+              <div class="res flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-r="commitment" onclick="selRes('commitment')"><span class="font-semibold">言質</span><span class="text-xs text-gray-400 mt-0.5">契約書未締結</span></div>
+              <div class="res flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-r="considering" onclick="selRes('considering')"><span class="font-semibold">検討中</span></div>
+              <div class="res flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-r="lost" onclick="selRes('lost')"><span class="font-semibold">失注</span></div>
+            </div>
+          </div>
+
+          <!-- 成約 -->
+          <div id="secClosed" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">成約となった要因</h2>
+              <div class="space-y-2" id="facS"></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">成約情報</h2>
+              <div class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">活動拠点 <span class="text-pink-500">*</span></label>
+                  <select id="actBase" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none">
+                    <option value="">選択してください</option>
+                    <option value="北海道">北海道</option>
+                    <option value="青森県">青森県</option>
+                    <option value="岩手県">岩手県</option>
+                    <option value="宮城県">宮城県</option>
+                    <option value="秋田県">秋田県</option>
+                    <option value="山形県">山形県</option>
+                    <option value="福島県">福島県</option>
+                    <option value="茨城県">茨城県</option>
+                    <option value="栃木県">栃木県</option>
+                    <option value="群馬県">群馬県</option>
+                    <option value="埼玉県">埼玉県</option>
+                    <option value="千葉県">千葉県</option>
+                    <option value="東京都">東京都</option>
+                    <option value="神奈川県">神奈川県</option>
+                    <option value="新潟県">新潟県</option>
+                    <option value="富山県">富山県</option>
+                    <option value="石川県">石川県</option>
+                    <option value="福井県">福井県</option>
+                    <option value="山梨県">山梨県</option>
+                    <option value="長野県">長野県</option>
+                    <option value="岐阜県">岐阜県</option>
+                    <option value="静岡県">静岡県</option>
+                    <option value="愛知県">愛知県</option>
+                    <option value="三重県">三重県</option>
+                    <option value="滋賀県">滋賀県</option>
+                    <option value="京都府">京都府</option>
+                    <option value="大阪府">大阪府</option>
+                    <option value="兵庫県">兵庫県</option>
+                    <option value="奈良県">奈良県</option>
+                    <option value="和歌山県">和歌山県</option>
+                    <option value="鳥取県">鳥取県</option>
+                    <option value="島根県">島根県</option>
+                    <option value="岡山県">岡山県</option>
+                    <option value="広島県">広島県</option>
+                    <option value="山口県">山口県</option>
+                    <option value="徳島県">徳島県</option>
+                    <option value="香川県">香川県</option>
+                    <option value="愛媛県">愛媛県</option>
+                    <option value="高知県">高知県</option>
+                    <option value="福岡県">福岡県</option>
+                    <option value="佐賀県">佐賀県</option>
+                    <option value="長崎県">長崎県</option>
+                    <option value="熊本県">熊本県</option>
+                    <option value="大分県">大分県</option>
+                    <option value="宮崎県">宮崎県</option>
+                    <option value="鹿児島県">鹿児島県</option>
+                    <option value="沖縄県">沖縄県</option>
+                    <option value="海外">海外（その他）</option>
+                  </select>
+                  <div id="actBaseOther" class="hidden mt-2"><input type="text" id="actBaseOtherText" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="国名・地域を入力"></div>
+                </div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">契約日 <span class="text-pink-500">*</span></label><input type="date" id="contD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-2">決済手段 <span class="text-pink-500">*</span></label><div class="grid grid-cols-2 gap-2" id="payOpts"></div><div id="payO" class="hidden mt-3"><input type="text" id="payOT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="決済手段を入力"></div></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">締結済契約書リンク <span class="text-pink-500">*</span></label><input type="text" id="contLink" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="https://..."><p id="contLinkE" class="hidden mt-1.5 text-sm text-red-500">⚠ https://で始まる正しいURLを入力してください</p></div>
+                <!-- ★ 領収書（成約時）追加 -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">領収書の必要有無 <span class="text-pink-500">*</span></label>
+                  <div class="grid grid-cols-2 gap-2" id="receiptOpts">
+                    <div class="receipt flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selReceipt('不要')"><span class="font-medium text-sm">不要</span></div>
+                    <div class="receipt flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selReceipt('必要')"><span class="font-medium text-sm">必要</span></div>
+                  </div>
+                  <p class="mt-2 text-xs text-gray-500">※必要な場合は、LINEに登録されているアドレス宛にお送りします</p>
+                </div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">CSへの引き継ぎ事項</label><textarea id="csHand" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="3" placeholder="引き継ぎ事項があれば入力"></textarea></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">振り返り <span class="text-pink-500">*</span></label><textarea id="ref" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="4" placeholder="商談の振り返りを入力"></textarea></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 言質 -->
+          <div id="secComm" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">言質となった要因</h2>
+              <div class="space-y-2" id="facC"></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">振り返り <span class="text-pink-500">*</span></h2>
+              <textarea id="commRef" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="4" placeholder="商談の振り返りを入力"></textarea>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">再面談について</h2>
+              <div class="grid grid-cols-3 gap-2" id="commRe"></div>
+              <div id="commReD" class="hidden mt-3 grid grid-cols-2 gap-3"><input type="date" id="commReDate" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"><input type="time" id="commReTime" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+            </div>
+          </div>
+
+          <!-- 検討中 -->
+          <div id="secCons" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">検討中となった要因</h2>
+              <div class="space-y-2" id="facCons"></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">再面談について</h2>
+              <div class="grid grid-cols-3 gap-2" id="consRe"></div>
+              <div id="consReD" class="hidden mt-3 grid grid-cols-2 gap-3"><input type="date" id="consReDate" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"><input type="time" id="consReTime" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
+            </div>
+          </div>
+
+          <!-- 失注 -->
+          <div id="secLost" class="hidden">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">失注となった要因</h2>
+              <div class="space-y-2" id="facL"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 送信 -->
+      <div id="secSub" class="hidden">
+        <button type="submit" id="subBtn" class="w-full py-4 text-white font-semibold rounded-xl g-btn hover:opacity-90">登録する</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const API = 'https://script.google.com/macros/s/AKfycbzkzn6baBEZtA0L1XpcbINXvVVKvev5fHvIK9CnEfaCUFq3ms3lDdESsEw7-Usw11nce/exec';
+    
+    // ★ 領収書の選択状態を追加
+    let S = {cid:'',cname:'',cdata:null,ph:'',ex:'',prd:'',res:'',facSuccess:[],facCommitment:[],facConsideration:[],facLost:[],pay:'',needRe:'',convPay:'',convPrd:'',receipt:'',convReceipt:''};
+    
+    const factors = ['SNSスキルで独立・副業したい','実績・再現性・投資対効果','今すぐ変わりたい欲求','明確な"痛み"がある','決済のハードル低さ','講師・担当者の信頼性'];
+    const lostFactors = ['金額','タイミング・環境要因','他社比較','時間を確保できない','独学でできそう','第三者相談','信販落ち','やりたいことが違う'];
+    const payMethods = ['mosh','ライフティ','CBS','アスマイル','AGペイメント','銀行振込（一括）','銀行振込（２分割）','テレコム','その他'];
+    
+    document.getElementById('f').addEventListener('submit', sub);
+    document.getElementById('actBase').addEventListener('change', function(){
+      document.getElementById('actBaseOther').classList.toggle('hidden', this.value !== '海外');
+    });
+    
+    function init(){
+      let html = '';
+      factors.forEach(f => { html += `<div class="fac flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-f="${f}" data-t="success" onclick="togFac(this,'success','g')"><div class="cb w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"><svg class="ck hidden w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div><span class="text-sm">${f}</span></div>`; });
+      document.getElementById('facS').innerHTML = html;
+      
+      html = '';
+      factors.forEach(f => { html += `<div class="fac flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-f="${f}" data-t="commitment" onclick="togFac(this,'commitment','b')"><div class="cb w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"><svg class="ck hidden w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div><span class="text-sm">${f}</span></div>`; });
+      document.getElementById('facC').innerHTML = html;
+      
+      html = '';
+      lostFactors.forEach(f => { html += `<div class="fac flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-f="${f}" data-t="consideration" onclick="togFac(this,'consideration','a')"><div class="cb w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"><svg class="ck hidden w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div><span class="text-sm">${f}</span></div>`; });
+      document.getElementById('facCons').innerHTML = html;
+      
+      html = '';
+      lostFactors.forEach(f => { html += `<div class="fac flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" data-f="${f}" data-t="lost" onclick="togFac(this,'lost','r')"><div class="cb w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"><svg class="ck hidden w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div><span class="text-sm">${f}</span></div>`; });
+      document.getElementById('facL').innerHTML = html;
+      
+      html = '';
+      payMethods.forEach(p => { html += `<div class="po flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selPay('${p}')">${p}</div>`; });
+      document.getElementById('payOpts').innerHTML = html;
+      
+      html = '';
+      payMethods.forEach(p => { html += `<div class="convPo flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selConvPay('${p}')">${p}</div>`; });
+      document.getElementById('convPay').innerHTML = html;
+      
+      ['commRe','consRe'].forEach(id => {
+        document.getElementById(id).innerHTML = ['はい','未定','なし'].map(o => `<div class="ro flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selRe('${o}','${id}')">${o}</div>`).join('');
+      });
+      
+      document.getElementById('loading').classList.add('hidden');
+    }
+    init();
+    
+    async function srch(){
+      const cid = document.getElementById('cid').value.trim();
+      if(!cid){alert('顧客IDを入力してください');return;}
+      const btn = document.getElementById('sbtn');
+      btn.textContent = '検索中...';
+      btn.disabled = true;
+      try{
+        const r = await fetch(`${API}?customerId=${encodeURIComponent(cid)}`);
+        const d = await r.json();
+        if(d.found){
+          S.cid = cid;
+          S.cname = d.name;
+          S.cdata = d;
+          document.getElementById('cname').textContent = d.name || '名前未登録';
+          document.getElementById('cline').textContent = d.lineName ? `LINE: ${d.lineName}` : '';
+          document.getElementById('cav').textContent = (d.name || '?')[0];
+          document.getElementById('cinfo').classList.remove('hidden');
+          document.getElementById('sec2').classList.remove('hidden');
+          prog(2);
+          loadProducts();
+        } else {
+          alert('顧客が見つかりませんでした');
+        }
+      }catch(e){
+        alert('検索エラー: '+e.message);
+      }
+      btn.textContent = '検索';
+      btn.disabled = false;
+    }
+    
+    async function loadProducts(){
+      try{
+        const r = await fetch(`${API}?action=getMaster`);
+        const d = await r.json();
+        let html = '';
+        let convHtml = '';
+        Object.entries(d.plans).forEach(([company, plans]) => {
+          html += `<div class="mb-3"><p class="text-xs font-semibold text-gray-500 mb-2">${company}</p><div class="space-y-2">`;
+          convHtml += `<div class="mb-3"><p class="text-xs font-semibold text-gray-500 mb-2">${company}</p><div class="space-y-2">`;
+          plans.forEach(p => {
+            html += `<div class="prd flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selPrd(this,'${p.name}')"><div class="prdDot hidden w-3 h-3 rounded-full g-badge"></div><div class="flex-1"><p class="text-sm font-medium">${p.name}</p><p class="text-xs text-gray-400">${p.amount ? p.amount.toLocaleString()+'円' : ''}</p></div></div>`;
+            convHtml += `<div class="convPrd flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selConvPrd(this,'${p.name}')"><div class="convPrdDot hidden w-3 h-3 rounded-full g-badge"></div><div class="flex-1"><p class="text-sm font-medium">${p.name}</p><p class="text-xs text-gray-400">${p.amount ? p.amount.toLocaleString()+'円' : ''}</p></div></div>`;
+          });
+          html += '</div></div>';
+          convHtml += '</div></div>';
+        });
+        document.getElementById('prds').innerHTML = html;
+        document.getElementById('convPrds').innerHTML = convHtml;
+      }catch(e){
+        console.error('プラン取得エラー:',e);
+      }
+    }
+    
+    function togFac(el,type,col){
+      const f = el.dataset.f;
+      const arr = type==='success'?'facSuccess':type==='commitment'?'facCommitment':type==='consideration'?'facConsideration':'facLost';
+      const colorClass = 'sel-'+col;
+      const bgClass = col==='g'?'bg-emerald-500':col==='b'?'bg-blue-500':col==='a'?'bg-amber-500':'bg-red-500';
+      const borderClass = col==='g'?'border-emerald-500':col==='b'?'border-blue-500':col==='a'?'border-amber-500':'border-red-500';
+      
+      if(S[arr].includes(f)){
+        S[arr] = S[arr].filter(x=>x!==f);
+        el.classList.remove(colorClass);
+        el.querySelector('.cb').classList.remove(bgClass,borderClass);
+        el.querySelector('.cb').classList.add('border-gray-300');
+        el.querySelector('.ck').classList.add('hidden');
+      }else{
+        S[arr].push(f);
+        el.classList.add(colorClass);
+        el.querySelector('.cb').classList.add(bgClass,borderClass);
+        el.querySelector('.cb').classList.remove('border-gray-300');
+        el.querySelector('.ck').classList.remove('hidden');
+      }
+    }
+    
+    function selPay(p){S.pay=p;document.querySelectorAll('.po').forEach(e=>e.classList.remove('sel'));const idx=payMethods.indexOf(p);document.querySelectorAll('.po')[idx].classList.add('sel');document.getElementById('payO').classList.toggle('hidden',p!=='その他');}
+    function selConvPay(p){S.convPay=p;document.querySelectorAll('.convPo').forEach(e=>e.classList.remove('sel'));const idx=payMethods.indexOf(p);document.querySelectorAll('.convPo')[idx].classList.add('sel');document.getElementById('convPayO').classList.toggle('hidden',p!=='その他');}
+    function selRe(o,id){S.needRe=o==='はい'?'yes':o==='未定'?'pending':'no';document.querySelectorAll(`#${id} .ro`).forEach(e=>e.classList.remove('sel-b','sel-a'));const idx=['はい','未定','なし'].indexOf(o);document.querySelectorAll(`#${id} .ro`)[idx].classList.add(o==='はい'?'sel-b':'sel-a');const dateId=id==='commRe'?'commReD':'consReD';document.getElementById(dateId).classList.toggle('hidden',o!=='はい');}
+    
+    function selPh(ph){S.ph=ph;document.querySelectorAll('.ph').forEach(e=>e.classList.remove('sel'));document.querySelector(`.ph[data-ph="${ph}"]`).classList.add('sel');['secRe','secRes','secConv','secSub'].forEach(id=>document.getElementById(id).classList.add('hidden'));if(ph==='reappointment'){document.getElementById('secRe').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}else if(ph==='result'){document.getElementById('secRes').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}else if(ph==='convert_to_closed'){document.getElementById('secConv').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}prog(3);}
+    
+    function selEx(st){S.ex=st;const col={cancel:'#EF4444',reschedule_pending:'#F59E0B',reschedule_confirmed:'#3B82F6',executed:'#10B981'};document.querySelectorAll('.ex').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});const exs=document.querySelectorAll('.ex'),idx=['cancel','reschedule_pending','reschedule_confirmed','executed'].indexOf(st);if(idx>=0){exs[idx].style.background=col[st];exs[idx].style.borderColor=col[st];exs[idx].classList.add('text-white');}document.getElementById('secResch').classList.toggle('hidden',st!=='reschedule_confirmed');document.getElementById('secExec').classList.toggle('hidden',st!=='executed');prog(4);}
+    
+    function selPrd(el,p){S.prd=p;document.querySelectorAll('.prd').forEach(e=>{e.classList.remove('sel');const dot=e.querySelector('.prdDot');if(dot)dot.classList.add('hidden');});el.classList.add('sel');const dot=el.querySelector('.prdDot');if(dot)dot.classList.remove('hidden');}
+    
+    function selConvPrd(el,p){S.convPrd=p;document.querySelectorAll('.convPrd').forEach(e=>{e.classList.remove('sel');const dot=e.querySelector('.convPrdDot');if(dot)dot.classList.add('hidden');});el.classList.add('sel');const dot=el.querySelector('.convPrdDot');if(dot)dot.classList.remove('hidden');}
+    
+    function selRes(r){S.res=r;const col={closed:'#10B981',commitment:'#3B82F6',considering:'#F59E0B',lost:'#EF4444'};document.querySelectorAll('.res').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});const sel=document.querySelector(`.res[data-r="${r}"]`);sel.style.background=col[r];sel.style.borderColor=col[r];sel.classList.add('text-white');['secClosed','secComm','secCons','secLost'].forEach(id=>document.getElementById(id).classList.add('hidden'));if(r==='closed')document.getElementById('secClosed').classList.remove('hidden');else if(r==='commitment')document.getElementById('secComm').classList.remove('hidden');else if(r==='considering')document.getElementById('secCons').classList.remove('hidden');else if(r==='lost')document.getElementById('secLost').classList.remove('hidden');}
+    
+    // ★ 領収書選択関数を追加
+    function selReceipt(v){
+      S.receipt=v;
+      document.querySelectorAll('.receipt').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
+      const idx=['不要','必要'].indexOf(v);
+      const els=document.querySelectorAll('.receipt');
+      if(idx>=0){els[idx].style.background='#10B981';els[idx].style.borderColor='#10B981';els[idx].classList.add('text-white');}
+    }
+    
+    function selConvReceipt(v){
+      S.convReceipt=v;
+      document.querySelectorAll('.convReceipt').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
+      const idx=['不要','必要'].indexOf(v);
+      const els=document.querySelectorAll('.convReceipt');
+      if(idx>=0){els[idx].style.background='#10B981';els[idx].style.borderColor='#10B981';els[idx].classList.add('text-white');}
+    }
+    
+    function vFuri(){const v=document.getElementById('furi').value,ok=!v||/^[ぁ-んー\s]+$/.test(v);document.getElementById('furiE').classList.toggle('hidden',ok);document.getElementById('furi').style.borderColor=ok?'':'#EF4444';return ok;}
+    function vLink(){const v=document.getElementById('contLink').value,ok=!v||(v.startsWith('http://')||v.startsWith('https://'));document.getElementById('contLinkE').classList.toggle('hidden',ok);document.getElementById('contLink').style.borderColor=ok?'':'#EF4444';return ok;}
+    function vConvLink(){const v=document.getElementById('convLink').value,ok=!v||(v.startsWith('http://')||v.startsWith('https://'));document.getElementById('convLinkE').classList.toggle('hidden',ok);document.getElementById('convLink').style.borderColor=ok?'':'#EF4444';return ok;}
+    function prog(s){for(let i=1;i<=4;i++){const e=document.getElementById('p'+i);if(i<=s){e.classList.remove('bg-gray-200');e.classList.add('g-bar');}else{e.classList.add('bg-gray-200');e.classList.remove('g-bar');}}}
+    
+    async function sub(e){
+      e.preventDefault();
+      
+      if(S.ph==='result'&&S.ex==='executed'){
+        if(!vFuri()){alert('ふりがなはひらがなで入力してください');return;}
+        if(S.res==='closed'&&!vLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
+        // ★ 領収書の必須チェック（成約時）
+        if(S.res==='closed'&&!S.receipt){alert('領収書の必要有無を選択してください');return;}
+      }
+      if(S.ph==='convert_to_closed'){
+        if(!vConvLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
+        // ★ 領収書の必須チェック（成約変更時）
+        if(!S.convReceipt){alert('領収書の必要有無を選択してください');return;}
+      }
+      
+      const b=document.getElementById('subBtn');
+      b.innerHTML='<svg class="animate-spin h-5 w-5 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>送信中...';
+      b.disabled=true;
+      
+      const fd={
+        customerId:S.cid,
+        customerName:S.cname,
+        phase:S.ph,
+        reAppointmentDate:document.getElementById('reD')?.value||document.getElementById('reschD')?.value||'',
+        reAppointmentTime:document.getElementById('reT')?.value||document.getElementById('reschT')?.value||'',
+        furigana:document.getElementById('furi')?.value||'',
+        executionStatus:S.ex,
+        meetingDate:new Date().toISOString().split('T')[0],
+        proposedProduct:S.prd,
+        result:S.res,
+        successFactors:S.facSuccess,
+        activityBase:(function(){
+          const sel = document.getElementById('actBase')?.value || '';
+          if (sel === '海外') {
+            return '海外：' + (document.getElementById('actBaseOtherText')?.value || '');
+          }
+          return sel;
+        })(),
+        contractDate:document.getElementById('contD')?.value||'',
+        paymentMethod:S.pay==='その他'?document.getElementById('payOT')?.value:S.pay,
+        contractLink:document.getElementById('contLink')?.value||'',
+        csHandover:document.getElementById('csHand')?.value||'',
+        reflection:document.getElementById('ref')?.value||document.getElementById('commRef')?.value||'',
+        commitmentFactors:S.facCommitment,
+        needsReAppointment:S.needRe,
+        considerationFactors:S.facConsideration,
+        lostFactors:S.facLost,
+        receiptRequired:S.receipt  // ★ 領収書を追加
+      };
+      
+      if(S.ph==='convert_to_closed'){
+        fd.paymentMethod=S.convPay==='その他'?document.getElementById('convPayOT')?.value:S.convPay;
+        fd.contractLink=document.getElementById('convLink')?.value||'';
+        fd.csHandover=document.getElementById('convHand')?.value||'';
+        fd.contractDate=document.getElementById('convContD')?.value||'';
+        fd.proposedProduct=S.convPrd;
+        fd.receiptRequired=S.convReceipt;  // ★ 成約変更時の領収書
+      }
+      
+      if(S.res==='commitment'&&S.needRe==='yes'){
+        fd.reAppointmentDate=document.getElementById('commReDate')?.value||'';
+        fd.reAppointmentTime=document.getElementById('commReTime')?.value||'';
+      }
+      if(S.res==='considering'&&S.needRe==='yes'){
+        fd.reAppointmentDate=document.getElementById('consReDate')?.value||'';
+        fd.reAppointmentTime=document.getElementById('consReTime')?.value||'';
+      }
+      
+      try{
+        console.log('送信:',fd);
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fd)});
+        const res=await r.json();
+        console.log('応答:',res);
+        
+        if(res.success){
+          document.getElementById('f').classList.add('hidden');
+          document.getElementById('ok').classList.remove('hidden');
+          document.getElementById('okMsg').textContent='登録を受け付けました（数分後に反映されます）';
+          prog(4);
+        }else{
+          alert('登録エラー: '+(res.error||'不明なエラー'));
+        }
+      }catch(err){
+        console.error(err);
+        document.getElementById('f').classList.add('hidden');
+        document.getElementById('ok').classList.remove('hidden');
+        prog(4);
+      }
+      
+      b.textContent='登録する';
+      b.disabled=false;
+    }
+    
+    function reset(){
+      // ★ 領収書の状態もリセット
+      S={cid:'',cname:'',cdata:null,ph:'',ex:'',prd:'',res:'',facSuccess:[],facCommitment:[],facConsideration:[],facLost:[],pay:'',needRe:'',convPay:'',convPrd:'',receipt:'',convReceipt:''};
+      document.getElementById('f').reset();
+      document.getElementById('f').classList.remove('hidden');
+      document.getElementById('ok').classList.add('hidden');
+      ['cinfo','sec2','secRe','secRes','secConv','secSub','secExec','secClosed','secComm','secCons','secLost','secResch'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      document.querySelectorAll('.ph,.prd,.po,.convPrd,.convPo').forEach(e=>e.classList.remove('sel'));
+      document.querySelectorAll('.ex,.res,.receipt,.convReceipt').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
+      document.querySelectorAll('.fac').forEach(e=>{e.classList.remove('sel-g','sel-b','sel-a','sel-r');e.querySelector('.cb').classList.remove('bg-emerald-500','bg-blue-500','bg-amber-500','bg-red-500','border-emerald-500','border-blue-500','border-amber-500','border-red-500');e.querySelector('.cb').classList.add('border-gray-300');e.querySelector('.ck').classList.add('hidden');});
+      document.querySelectorAll('.prdDot,.convPrdDot').forEach(e=>e.classList.add('hidden'));
+      document.querySelectorAll('.ro').forEach(e=>e.classList.remove('sel-b','sel-a'));
+      document.getElementById('cav').style.background='';
+      ['furiE','contLinkE','convLinkE'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      ['furi','contLink','convLink'].forEach(id=>document.getElementById(id).style.borderColor='');
+      ['payO','convPayO','commReD','consReD'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      prog(1);
+    }
+  </script>
+</body>
+</html>
