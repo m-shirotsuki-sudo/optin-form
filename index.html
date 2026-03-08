@@ -201,7 +201,7 @@
 
           <!-- ▼ 共通：活動拠点（成約・言質・検討中・失注 全結果で表示）【v13で追加】 -->
           <div id="secActBase" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h2 class="font-semibold text-gray-900 mb-4">活動拠点 <span class="text-pink-500">*</span></h2>
+            <h2 class="font-semibold text-gray-900 mb-4">活動拠点 <span id="actBaseRequired" class="text-pink-500 hidden">*</span></h2>
             <select id="actBase" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none">
               <option value="">選択してください</option>
               <option value="北海道">北海道</option>
@@ -484,8 +484,9 @@
       else if(r==='commitment')document.getElementById('secComm').classList.remove('hidden');
       else if(r==='considering')document.getElementById('secCons').classList.remove('hidden');
       else if(r==='lost')document.getElementById('secLost').classList.remove('hidden');
-      // ▼ 活動拠点：全結果で表示【v13で変更】
+      // ▼ 活動拠点：全結果で表示、必須マークは成約のみ【v13】
       document.getElementById('secActBase').classList.remove('hidden');
+      document.getElementById('actBaseRequired').classList.toggle('hidden', r !== 'closed');
     }
     
     function selReceipt(v){
@@ -517,8 +518,8 @@
         
         if(!S.res){alert('面談結果を選択してください');return;}
         
-        // ▼ 活動拠点必須チェック（全結果）【v13で追加】
-        if(!document.getElementById('actBase').value){alert('活動拠点を選択してください');return;}
+        // ▼ 活動拠点必須チェック（成約のみ）【v13】
+        if(S.res==='closed' && !document.getElementById('actBase').value){alert('活動拠点を選択してください');return;}
         
         // ▼ 振り返り必須チェック（全結果）【v13で追加】
         const refVal = S.res==='closed' ? document.getElementById('ref').value
