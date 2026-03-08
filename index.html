@@ -37,7 +37,7 @@
         <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm g-badge">O</div>
         <div>
           <h1 class="text-lg font-bold text-gray-900">面談結果入力</h1>
-          <p class="text-xs text-gray-500">Sales Management System v11</p>
+          <p class="text-xs text-gray-500">Sales Management System v13</p>
         </div>
       </div>
     </div>
@@ -142,7 +142,6 @@
             <div><label class="block text-sm font-medium text-gray-700 mb-1.5">契約日 <span class="text-pink-500">*</span></label><input type="date" id="convContD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-2">決済手段 <span class="text-pink-500">*</span></label><div class="grid grid-cols-2 gap-2" id="convPay"></div><div id="convPayO" class="hidden mt-3"><input type="text" id="convPayOT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="決済手段を入力"></div></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1.5">締結済契約書リンク <span class="text-pink-500">*</span></label><input type="text" id="convLink" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="https://..."><p id="convLinkE" class="hidden mt-1.5 text-sm text-red-500">⚠ https://で始まる正しいURLを入力してください</p></div>
-            <!-- ★ 領収書（成約変更時）追加 -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">領収書の必要有無 <span class="text-pink-500">*</span></label>
               <div class="grid grid-cols-2 gap-2" id="convReceiptOpts">
@@ -200,6 +199,63 @@
             </div>
           </div>
 
+          <!-- ▼ 共通：活動拠点（成約・言質・検討中・失注 全結果で表示）【v13で追加】 -->
+          <div id="secActBase" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 class="font-semibold text-gray-900 mb-4">活動拠点 <span class="text-pink-500">*</span></h2>
+            <select id="actBase" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none">
+              <option value="">選択してください</option>
+              <option value="北海道">北海道</option>
+              <option value="青森県">青森県</option>
+              <option value="岩手県">岩手県</option>
+              <option value="宮城県">宮城県</option>
+              <option value="秋田県">秋田県</option>
+              <option value="山形県">山形県</option>
+              <option value="福島県">福島県</option>
+              <option value="茨城県">茨城県</option>
+              <option value="栃木県">栃木県</option>
+              <option value="群馬県">群馬県</option>
+              <option value="埼玉県">埼玉県</option>
+              <option value="千葉県">千葉県</option>
+              <option value="東京都">東京都</option>
+              <option value="神奈川県">神奈川県</option>
+              <option value="新潟県">新潟県</option>
+              <option value="富山県">富山県</option>
+              <option value="石川県">石川県</option>
+              <option value="福井県">福井県</option>
+              <option value="山梨県">山梨県</option>
+              <option value="長野県">長野県</option>
+              <option value="岐阜県">岐阜県</option>
+              <option value="静岡県">静岡県</option>
+              <option value="愛知県">愛知県</option>
+              <option value="三重県">三重県</option>
+              <option value="滋賀県">滋賀県</option>
+              <option value="京都府">京都府</option>
+              <option value="大阪府">大阪府</option>
+              <option value="兵庫県">兵庫県</option>
+              <option value="奈良県">奈良県</option>
+              <option value="和歌山県">和歌山県</option>
+              <option value="鳥取県">鳥取県</option>
+              <option value="島根県">島根県</option>
+              <option value="岡山県">岡山県</option>
+              <option value="広島県">広島県</option>
+              <option value="山口県">山口県</option>
+              <option value="徳島県">徳島県</option>
+              <option value="香川県">香川県</option>
+              <option value="愛媛県">愛媛県</option>
+              <option value="高知県">高知県</option>
+              <option value="福岡県">福岡県</option>
+              <option value="佐賀県">佐賀県</option>
+              <option value="長崎県">長崎県</option>
+              <option value="熊本県">熊本県</option>
+              <option value="大分県">大分県</option>
+              <option value="宮崎県">宮崎県</option>
+              <option value="鹿児島県">鹿児島県</option>
+              <option value="沖縄県">沖縄県</option>
+              <option value="海外">海外（その他）</option>
+            </select>
+            <div id="actBaseOther" class="hidden mt-2"><input type="text" id="actBaseOtherText" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="国名・地域を入力"></div>
+          </div>
+
           <!-- 成約 -->
           <div id="secClosed" class="hidden space-y-4">
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -209,64 +265,9 @@
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
               <h2 class="font-semibold text-gray-900 mb-4">成約情報</h2>
               <div class="space-y-4">
-                <div><label class="block text-sm font-medium text-gray-700 mb-1.5">活動拠点 <span class="text-pink-500">*</span></label>
-                  <select id="actBase" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none">
-                    <option value="">選択してください</option>
-                    <option value="北海道">北海道</option>
-                    <option value="青森県">青森県</option>
-                    <option value="岩手県">岩手県</option>
-                    <option value="宮城県">宮城県</option>
-                    <option value="秋田県">秋田県</option>
-                    <option value="山形県">山形県</option>
-                    <option value="福島県">福島県</option>
-                    <option value="茨城県">茨城県</option>
-                    <option value="栃木県">栃木県</option>
-                    <option value="群馬県">群馬県</option>
-                    <option value="埼玉県">埼玉県</option>
-                    <option value="千葉県">千葉県</option>
-                    <option value="東京都">東京都</option>
-                    <option value="神奈川県">神奈川県</option>
-                    <option value="新潟県">新潟県</option>
-                    <option value="富山県">富山県</option>
-                    <option value="石川県">石川県</option>
-                    <option value="福井県">福井県</option>
-                    <option value="山梨県">山梨県</option>
-                    <option value="長野県">長野県</option>
-                    <option value="岐阜県">岐阜県</option>
-                    <option value="静岡県">静岡県</option>
-                    <option value="愛知県">愛知県</option>
-                    <option value="三重県">三重県</option>
-                    <option value="滋賀県">滋賀県</option>
-                    <option value="京都府">京都府</option>
-                    <option value="大阪府">大阪府</option>
-                    <option value="兵庫県">兵庫県</option>
-                    <option value="奈良県">奈良県</option>
-                    <option value="和歌山県">和歌山県</option>
-                    <option value="鳥取県">鳥取県</option>
-                    <option value="島根県">島根県</option>
-                    <option value="岡山県">岡山県</option>
-                    <option value="広島県">広島県</option>
-                    <option value="山口県">山口県</option>
-                    <option value="徳島県">徳島県</option>
-                    <option value="香川県">香川県</option>
-                    <option value="愛媛県">愛媛県</option>
-                    <option value="高知県">高知県</option>
-                    <option value="福岡県">福岡県</option>
-                    <option value="佐賀県">佐賀県</option>
-                    <option value="長崎県">長崎県</option>
-                    <option value="熊本県">熊本県</option>
-                    <option value="大分県">大分県</option>
-                    <option value="宮崎県">宮崎県</option>
-                    <option value="鹿児島県">鹿児島県</option>
-                    <option value="沖縄県">沖縄県</option>
-                    <option value="海外">海外（その他）</option>
-                  </select>
-                  <div id="actBaseOther" class="hidden mt-2"><input type="text" id="actBaseOtherText" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="国名・地域を入力"></div>
-                </div>
                 <div><label class="block text-sm font-medium text-gray-700 mb-1.5">契約日 <span class="text-pink-500">*</span></label><input type="date" id="contD" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none"></div>
                 <div><label class="block text-sm font-medium text-gray-700 mb-2">決済手段 <span class="text-pink-500">*</span></label><div class="grid grid-cols-2 gap-2" id="payOpts"></div><div id="payO" class="hidden mt-3"><input type="text" id="payOT" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="決済手段を入力"></div></div>
                 <div><label class="block text-sm font-medium text-gray-700 mb-1.5">締結済契約書リンク <span class="text-pink-500">*</span></label><input type="text" id="contLink" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none" placeholder="https://..."><p id="contLinkE" class="hidden mt-1.5 text-sm text-red-500">⚠ https://で始まる正しいURLを入力してください</p></div>
-                <!-- ★ 領収書（成約時）追加 -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">領収書の必要有無 <span class="text-pink-500">*</span></label>
                   <div class="grid grid-cols-2 gap-2" id="receiptOpts">
@@ -304,6 +305,11 @@
               <h2 class="font-semibold text-gray-900 mb-4">検討中となった要因</h2>
               <div class="space-y-2" id="facCons"></div>
             </div>
+            <!-- ▼ 振り返り（検討中）【v13で追加】 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">振り返り <span class="text-pink-500">*</span></h2>
+              <textarea id="consRef" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="4" placeholder="商談の振り返りを入力"></textarea>
+            </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
               <h2 class="font-semibold text-gray-900 mb-4">再面談について</h2>
               <div class="grid grid-cols-3 gap-2" id="consRe"></div>
@@ -312,10 +318,15 @@
           </div>
 
           <!-- 失注 -->
-          <div id="secLost" class="hidden">
+          <div id="secLost" class="hidden space-y-4">
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
               <h2 class="font-semibold text-gray-900 mb-4">失注となった要因</h2>
               <div class="space-y-2" id="facL"></div>
+            </div>
+            <!-- ▼ 振り返り（失注）【v13で追加】 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 class="font-semibold text-gray-900 mb-4">振り返り <span class="text-pink-500">*</span></h2>
+              <textarea id="lostRef" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none" rows="4" placeholder="商談の振り返りを入力"></textarea>
             </div>
           </div>
         </div>
@@ -331,7 +342,6 @@
   <script>
     const API = 'https://script.google.com/macros/s/AKfycbzkzn6baBEZtA0L1XpcbINXvVKvev5fHvIK9CnEfaCUFq3ms3lDdESsEw7-Usw11nce/exec';
     
-    // ★ 領収書の選択状態を追加
     let S = {cid:'',cname:'',cdata:null,ph:'',ex:'',prd:'',res:'',facSuccess:[],facCommitment:[],facConsideration:[],facLost:[],pay:'',needRe:'',convPay:'',convPrd:'',receipt:'',convReceipt:''};
     
     const factors = ['SNSスキルで独立・副業したい','実績・再現性・投資対効果','今すぐ変わりたい欲求','明確な"痛み"がある','決済のハードル低さ','講師・担当者の信頼性'];
@@ -463,9 +473,21 @@
     
     function selConvPrd(el,p){S.convPrd=p;document.querySelectorAll('.convPrd').forEach(e=>{e.classList.remove('sel');const dot=e.querySelector('.convPrdDot');if(dot)dot.classList.add('hidden');});el.classList.add('sel');const dot=el.querySelector('.convPrdDot');if(dot)dot.classList.remove('hidden');}
     
-    function selRes(r){S.res=r;const col={closed:'#10B981',commitment:'#3B82F6',considering:'#F59E0B',lost:'#EF4444'};document.querySelectorAll('.res').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});const sel=document.querySelector(`.res[data-r="${r}"]`);sel.style.background=col[r];sel.style.borderColor=col[r];sel.classList.add('text-white');['secClosed','secComm','secCons','secLost'].forEach(id=>document.getElementById(id).classList.add('hidden'));if(r==='closed')document.getElementById('secClosed').classList.remove('hidden');else if(r==='commitment')document.getElementById('secComm').classList.remove('hidden');else if(r==='considering')document.getElementById('secCons').classList.remove('hidden');else if(r==='lost')document.getElementById('secLost').classList.remove('hidden');}
+    function selRes(r){
+      S.res=r;
+      const col={closed:'#10B981',commitment:'#3B82F6',considering:'#F59E0B',lost:'#EF4444'};
+      document.querySelectorAll('.res').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
+      const sel=document.querySelector(`.res[data-r="${r}"]`);
+      sel.style.background=col[r];sel.style.borderColor=col[r];sel.classList.add('text-white');
+      ['secClosed','secComm','secCons','secLost'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      if(r==='closed')document.getElementById('secClosed').classList.remove('hidden');
+      else if(r==='commitment')document.getElementById('secComm').classList.remove('hidden');
+      else if(r==='considering')document.getElementById('secCons').classList.remove('hidden');
+      else if(r==='lost')document.getElementById('secLost').classList.remove('hidden');
+      // ▼ 活動拠点：全結果で表示【v13で変更】
+      document.getElementById('secActBase').classList.remove('hidden');
+    }
     
-    // ★ 領収書選択関数を追加
     function selReceipt(v){
       S.receipt=v;
       document.querySelectorAll('.receipt').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
@@ -492,13 +514,24 @@
       
       if(S.ph==='result'&&S.ex==='executed'){
         if(!vFuri()){alert('ふりがなはひらがなで入力してください');return;}
+        
+        if(!S.res){alert('面談結果を選択してください');return;}
+        
+        // ▼ 活動拠点必須チェック（全結果）【v13で追加】
+        if(!document.getElementById('actBase').value){alert('活動拠点を選択してください');return;}
+        
+        // ▼ 振り返り必須チェック（全結果）【v13で追加】
+        const refVal = S.res==='closed' ? document.getElementById('ref').value
+                     : S.res==='commitment' ? document.getElementById('commRef').value
+                     : S.res==='considering' ? document.getElementById('consRef').value
+                     : document.getElementById('lostRef').value;
+        if(!refVal.trim()){alert('振り返りを入力してください');return;}
+        
         if(S.res==='closed'&&!vLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
-        // ★ 領収書の必須チェック（成約時）
         if(S.res==='closed'&&!S.receipt){alert('領収書の必要有無を選択してください');return;}
       }
       if(S.ph==='convert_to_closed'){
         if(!vConvLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
-        // ★ 領収書の必須チェック（成約変更時）
         if(!S.convReceipt){alert('領収書の必要有無を選択してください');return;}
       }
       
@@ -506,6 +539,20 @@
       b.innerHTML='<svg class="animate-spin h-5 w-5 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>送信中...';
       b.disabled=true;
       
+      // ▼ 振り返りの値を結果に応じて取得【v13で変更】
+      const reflectionVal = S.res==='closed' ? document.getElementById('ref')?.value||''
+                          : S.res==='commitment' ? document.getElementById('commRef')?.value||''
+                          : S.res==='considering' ? document.getElementById('consRef')?.value||''
+                          : S.res==='lost' ? document.getElementById('lostRef')?.value||''
+                          : '';
+
+      // ▼ 活動拠点の値を取得【v13で変更：全結果共通のsecActBaseから取得】
+      const actBaseVal = (function(){
+        const sel = document.getElementById('actBase')?.value || '';
+        if (sel === '海外') return '海外：' + (document.getElementById('actBaseOtherText')?.value || '');
+        return sel;
+      })();
+
       const fd={
         customerId:S.cid,
         customerName:S.cname,
@@ -518,23 +565,17 @@
         proposedProduct:S.prd,
         result:S.res,
         successFactors:S.facSuccess,
-        activityBase:(function(){
-          const sel = document.getElementById('actBase')?.value || '';
-          if (sel === '海外') {
-            return '海外：' + (document.getElementById('actBaseOtherText')?.value || '');
-          }
-          return sel;
-        })(),
+        activityBase:actBaseVal,
         contractDate:document.getElementById('contD')?.value||'',
         paymentMethod:S.pay==='その他'?document.getElementById('payOT')?.value:S.pay,
         contractLink:document.getElementById('contLink')?.value||'',
         csHandover:document.getElementById('csHand')?.value||'',
-        reflection:document.getElementById('ref')?.value||document.getElementById('commRef')?.value||'',
+        reflection:reflectionVal,
         commitmentFactors:S.facCommitment,
         needsReAppointment:S.needRe,
         considerationFactors:S.facConsideration,
         lostFactors:S.facLost,
-        receiptRequired:S.receipt  // ★ 領収書を追加
+        receiptRequired:S.receipt
       };
       
       if(S.ph==='convert_to_closed'){
@@ -543,7 +584,7 @@
         fd.csHandover=document.getElementById('convHand')?.value||'';
         fd.contractDate=document.getElementById('convContD')?.value||'';
         fd.proposedProduct=S.convPrd;
-        fd.receiptRequired=S.convReceipt;  // ★ 成約変更時の領収書
+        fd.receiptRequired=S.convReceipt;
       }
       
       if(S.res==='commitment'&&S.needRe==='yes'){
@@ -581,12 +622,11 @@
     }
     
     function reset(){
-      // ★ 領収書の状態もリセット
       S={cid:'',cname:'',cdata:null,ph:'',ex:'',prd:'',res:'',facSuccess:[],facCommitment:[],facConsideration:[],facLost:[],pay:'',needRe:'',convPay:'',convPrd:'',receipt:'',convReceipt:''};
       document.getElementById('f').reset();
       document.getElementById('f').classList.remove('hidden');
       document.getElementById('ok').classList.add('hidden');
-      ['cinfo','sec2','secRe','secRes','secConv','secSub','secExec','secClosed','secComm','secCons','secLost','secResch'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      ['cinfo','sec2','secRe','secRes','secConv','secSub','secExec','secClosed','secComm','secCons','secLost','secResch','secActBase'].forEach(id=>document.getElementById(id).classList.add('hidden'));
       document.querySelectorAll('.ph,.prd,.po,.convPrd,.convPo').forEach(e=>e.classList.remove('sel'));
       document.querySelectorAll('.ex,.res,.receipt,.convReceipt').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});
       document.querySelectorAll('.fac').forEach(e=>{e.classList.remove('sel-g','sel-b','sel-a','sel-r');e.querySelector('.cb').classList.remove('bg-emerald-500','bg-blue-500','bg-amber-500','bg-red-500','border-emerald-500','border-blue-500','border-amber-500','border-red-500');e.querySelector('.cb').classList.add('border-gray-300');e.querySelector('.ck').classList.add('hidden');});
@@ -595,7 +635,7 @@
       document.getElementById('cav').style.background='';
       ['furiE','contLinkE','convLinkE'].forEach(id=>document.getElementById(id).classList.add('hidden'));
       ['furi','contLink','convLink'].forEach(id=>document.getElementById(id).style.borderColor='');
-      ['payO','convPayO','commReD','consReD'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+      ['payO','convPayO','commReD','consReD','actBaseOther'].forEach(id=>document.getElementById(id).classList.add('hidden'));
       prog(1);
     }
   </script>
