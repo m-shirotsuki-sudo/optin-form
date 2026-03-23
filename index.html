@@ -468,8 +468,31 @@
     
     function selPh(ph){S.ph=ph;document.querySelectorAll('.ph').forEach(e=>e.classList.remove('sel'));document.querySelector(`.ph[data-ph="${ph}"]`).classList.add('sel');['secRe','secRes','secConv','secSub'].forEach(id=>document.getElementById(id).classList.add('hidden'));if(ph==='reappointment'){document.getElementById('secRe').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}else if(ph==='result'){document.getElementById('secRes').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}else if(ph==='convert_to_closed'){document.getElementById('secConv').classList.remove('hidden');document.getElementById('secSub').classList.remove('hidden');}prog(3);}
     
-    function selEx(st){S.ex=st;const col={cancel:'#EF4444',reschedule_pending:'#F59E0B',reschedule_confirmed:'#3B82F6',executed:'#10B981'};document.querySelectorAll('.ex').forEach(e=>{e.style.background='';e.style.borderColor='';e.classList.remove('text-white');});const exs=document.querySelectorAll('.ex'),idx=['cancel','reschedule_pending','reschedule_confirmed','executed'].indexOf(st);if(idx>=0){exs[idx].style.background=col[st];exs[idx].style.borderColor=col[st];exs[idx].classList.add('text-white');}document.getElementById('secResch').classList.toggle('hidden',st!=='reschedule_confirmed');document.getElementById('secExec').classList.toggle('hidden',st!=='executed');prog(4);}
-    
+    function selEx(st){
+  S.ex=st;
+  const col={
+    'cancelled_contact':'#EF4444',
+    'cancelled':'#EF4444',
+    'reschedule_pending':'#F59E0B',
+    'reschedule_confirmed':'#3B82F6',
+    'executed':'#10B981'
+  };
+  document.querySelectorAll('.ex').forEach(e=>{
+    e.style.background='';
+    e.style.borderColor='';
+    e.classList.remove('text-white');
+  });
+  const exs=document.querySelectorAll('.ex');
+  const idx=['cancelled_contact','cancelled','reschedule_pending','reschedule_confirmed','executed'].indexOf(st);
+  if(idx>=0){
+    exs[idx].style.background=col[st];
+    exs[idx].style.borderColor=col[st];
+    exs[idx].classList.add('text-white');
+  }
+  document.getElementById('secResch').classList.toggle('hidden',st!=='reschedule_confirmed');
+  document.getElementById('secExec').classList.toggle('hidden',st!=='executed');
+  prog(4);
+}
     function selPrd(el,p){S.prd=p;document.querySelectorAll('.prd').forEach(e=>{e.classList.remove('sel');const dot=e.querySelector('.prdDot');if(dot)dot.classList.add('hidden');});el.classList.add('sel');const dot=el.querySelector('.prdDot');if(dot)dot.classList.remove('hidden');}
     
     function selConvPrd(el,p){S.convPrd=p;document.querySelectorAll('.convPrd').forEach(e=>{e.classList.remove('sel');const dot=e.querySelector('.convPrdDot');if(dot)dot.classList.add('hidden');});el.classList.add('sel');const dot=el.querySelector('.convPrdDot');if(dot)dot.classList.remove('hidden');}
