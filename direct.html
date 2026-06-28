@@ -105,7 +105,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">担当セールス <span class="text-blue-500">*</span></label>
-            <input type="text" id="sales" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例：加治佐 卓也">
+            <input type="text" id="sales" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">活動拠点</label>
@@ -150,7 +150,7 @@
             <input type="date" id="contractDate" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">締結済 契約書リンク</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">締結済 契約書リンク <span class="text-blue-500">*</span></label>
             <input type="url" id="contractLink" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="https://...">
           </div>
           <div>
@@ -159,14 +159,58 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-3">
-          <h2 class="font-semibold text-gray-900">契約書の郵送</h2>
-          <div class="grid grid-cols-1 gap-2" id="mailOpts"></div>
-          <input type="text" id="postOffice" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none hidden" placeholder="郵便局名（局止め先）">
-          <textarea id="mailAddress" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none hidden resize-none" placeholder="〒・住所・宛名をまとめて入力"></textarea>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">追跡番号の要否</label>
-            <div class="grid grid-cols-2 gap-2" id="trackOpts"></div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-1">契約書の郵送 <span class="text-blue-500">*</span></h2>
+          <p class="text-xs text-gray-500 mb-4">契約書をどこに送付するか選択してください</p>
+          <div class="grid grid-cols-1 gap-2" id="mailMethodOpts">
+            <div class="mailMethod flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selMailMethod('局止め','mail')"><span class="font-medium text-sm">局止め（郵便局で受け取り）</span></div>
+            <div class="mailMethod flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selMailMethod('契約書記載住所','mail')"><span class="font-medium text-sm">契約書に記載の住所へ郵送</span></div>
+            <div class="mailMethod flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selMailMethod('その他住所','mail')"><span class="font-medium text-sm">その他の住所へ郵送</span></div>
+          </div>
+
+          <div id="mailPostOffice" class="hidden mt-4">
+            <label class="block text-sm font-bold text-red-600 mb-1.5">局止め先の郵便局名 <span class="text-blue-500">*</span></label>
+            <div class="mb-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+              <p class="text-sm text-red-700 font-bold">⚠ 契約書の送付先です。郵便局名を一字一句正確に入力してください。</p>
+              <p class="text-xs text-red-600 mt-1">誤りがあると契約書が届かず、再送が必要になります。「○○郵便局」まで正式名称で記入してください。</p>
+            </div>
+            <input type="text" id="mailPostOfficeName" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）渋谷郵便局">
+          </div>
+
+          <div id="mailOtherAddr" class="hidden mt-4 space-y-3">
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+              <p class="text-sm text-amber-700 font-bold">⚠ 契約書の送付先です。番地・建物名・部屋番号まで正確に記入してください。</p>
+              <p class="text-xs text-amber-600 mt-1">記入漏れがあると契約書が届きません。郵便番号を入力すると住所が自動入力されます。</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">郵便番号 <span class="text-blue-500">*</span></label>
+              <input type="text" id="mailZip" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）100-0001（ハイフンあり7桁）" oninput="onZipInput('mail')">
+              <p id="mailZipE" class="hidden mt-1.5 text-sm text-red-500">⚠ 郵便番号は「100-0001」の形式で入力してください</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">都道府県 <span class="text-blue-500">*</span></label>
+              <input type="text" id="mailPref" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）東京都">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">市区町村 <span class="text-blue-500">*</span></label>
+              <input type="text" id="mailCity" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）千代田区千代田">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">番地・建物名・部屋番号 <span class="text-blue-500">*</span></label>
+              <input type="text" id="mailStreet" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）1-1 ○○マンション101">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">宛名（送付先氏名） <span class="text-blue-500">*</span></label>
+              <input type="text" id="mailName" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="例）山田太郎">
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">追跡番号は必要ですか？ <span class="text-blue-500">*</span></label>
+            <div class="grid grid-cols-2 gap-2" id="mailTrackOpts">
+              <div class="mailTrack flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selMailTrack('はい','mail')"><span class="font-medium text-sm">はい</span></div>
+              <div class="mailTrack flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50" onclick="selMailTrack('いいえ','mail')"><span class="font-medium text-sm">いいえ</span></div>
+            </div>
           </div>
         </div>
 
@@ -230,8 +274,6 @@
   document.getElementById('facL').innerHTML = facHtml(lostFactors,'lost');
   document.getElementById('payOpts').innerHTML = pillHtml(payMethods,'po','selPay');
   document.getElementById('receiptOpts').innerHTML = pillHtml(receiptOpts,'ro','selReceipt');
-  document.getElementById('mailOpts').innerHTML = pillHtml(mailMethods,'mo','selMail');
-  document.getElementById('trackOpts').innerHTML = pillHtml(trackOpts,'to','selTrack');
   document.getElementById('resOpts').innerHTML = resultOpts.map(([label,val]) =>
     `<div class="res flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-gray-100 bg-gray-50 text-sm font-medium" onclick="selRes(this,'${val}')">${label}</div>`).join('');
 
@@ -289,11 +331,84 @@
   }
   function selPay(el,p){ document.querySelectorAll('.po').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); S.pay=p; }
   function selReceipt(el,p){ document.querySelectorAll('.ro').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); S.receipt=p; }
-  function selTrack(el,p){ document.querySelectorAll('.to').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); S.track=p; }
-  function selMail(el,p){
-    document.querySelectorAll('.mo').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); S.mailMethod=p;
-    document.getElementById('postOffice').classList.toggle('hidden', p!=='局止め');
-    document.getElementById('mailAddress').classList.toggle('hidden', p!=='その他住所');
+  // ▼ 郵送（既存フォームと同一仕様：住所分割・郵便番号自動入力・厳格バリデーション）
+  function selMailMethod(v, prefix){
+    S[prefix+'Method'] = v;
+    const methods = ['局止め','契約書記載住所','その他住所'];
+    const els = document.querySelectorAll('.'+prefix+'Method');
+    els.forEach(e=>{ e.classList.remove('sel'); });
+    const idx = methods.indexOf(v);
+    if(idx>=0){ els[idx].classList.add('sel'); }
+    document.getElementById(prefix+'PostOffice').classList.toggle('hidden', v!=='局止め');
+    document.getElementById(prefix+'OtherAddr').classList.toggle('hidden', v!=='その他住所');
+  }
+
+  function selMailTrack(v, prefix){
+    S[prefix+'Track'] = v;
+    const els = document.querySelectorAll('.'+prefix+'Track');
+    els.forEach(e=>{ e.classList.remove('sel'); });
+    const idx = ['はい','いいえ'].indexOf(v);
+    if(idx>=0){ els[idx].classList.add('sel'); }
+  }
+
+  async function onZipInput(prefix){
+    const zip = (document.getElementById(prefix+'Zip').value||'').replace(/[^0-9]/g,'');
+    if(zip.length!==7) return;
+    try{
+      const ctrl = new AbortController();
+      const tid = setTimeout(()=>ctrl.abort(), 5000);
+      const r = await fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode='+zip, {signal:ctrl.signal});
+      clearTimeout(tid);
+      const d = await r.json();
+      if(d && d.results && d.results[0]){
+        const a = d.results[0];
+        const pref = document.getElementById(prefix+'Pref');
+        const city = document.getElementById(prefix+'City');
+        if(!pref.value) pref.value = a.address1||'';
+        if(!city.value) city.value = (a.address2||'')+(a.address3||'');
+      }
+    }catch(e){ console.warn('住所自動入力スキップ:', e); }
+  }
+
+  function vZip(prefix){
+    const v = document.getElementById(prefix+'Zip').value;
+    const ok = /^\d{3}-?\d{4}$/.test(v);
+    document.getElementById(prefix+'ZipE').classList.toggle('hidden', ok);
+    document.getElementById(prefix+'Zip').style.borderColor = ok ? '' : '#EF4444';
+    return ok;
+  }
+
+  function vMailSection(prefix){
+    const method = S[prefix+'Method'];
+    if(!method){ alert('契約書の郵送方法を選択してください'); return false; }
+    if(method==='局止め'){
+      if(!document.getElementById(prefix+'PostOfficeName').value.trim()){ alert('局止め先の郵便局名を入力してください'); return false; }
+    }
+    if(method==='その他住所'){
+      if(!vZip(prefix)){ alert('郵便番号は「100-0001」の形式で入力してください'); return false; }
+      if(!document.getElementById(prefix+'Pref').value.trim()){ alert('送付先の都道府県を入力してください'); return false; }
+      if(!document.getElementById(prefix+'City').value.trim()){ alert('送付先の市区町村を入力してください'); return false; }
+      if(!document.getElementById(prefix+'Street').value.trim()){ alert('送付先の番地・建物名・部屋番号を入力してください'); return false; }
+      if(!document.getElementById(prefix+'Name').value.trim()){ alert('送付先の宛名を入力してください'); return false; }
+    }
+    if(!S[prefix+'Track']){ alert('追跡番号の要否を選択してください'); return false; }
+    return true;
+  }
+
+  function buildMailData(prefix){
+    const method = S[prefix+'Method'];
+    let postOffice='', addr='';
+    if(method==='局止め'){
+      postOffice = document.getElementById(prefix+'PostOfficeName').value.trim();
+    } else if(method==='その他住所'){
+      const zip = document.getElementById(prefix+'Zip').value.trim();
+      const pref = document.getElementById(prefix+'Pref').value.trim();
+      const city = document.getElementById(prefix+'City').value.trim();
+      const street = document.getElementById(prefix+'Street').value.trim();
+      const nm = document.getElementById(prefix+'Name').value.trim();
+      addr = '〒'+zip+' '+pref+city+street+' '+nm;
+    }
+    return { mailingMethod: method, postOfficeName: postOffice, mailingAddress: addr, trackingNeeded: S[prefix+'Track'] };
   }
 
   document.getElementById('f').addEventListener('submit', async function(e){
@@ -315,7 +430,9 @@
     if(S.res==='closed'){
       if(!S.pay){ alert('決済手段を選択してください'); return; }
       if(!document.getElementById('contractDate').value){ alert('契約日を入力してください'); return; }
+      if(!document.getElementById('contractLink').value.trim()){ alert('締結済 契約書リンクを入力してください'); return; }
       if(!S.receipt){ alert('領収書の要否を選択してください'); return; }
+      if(!vMailSection('mail')){ return; }
     }
 
     let actBase = document.getElementById('actBase').value;
@@ -346,10 +463,11 @@
       fd.receiptRequired = S.receipt;
       fd.successFactors = S.facSuccess;
       fd.csHandover = document.getElementById('csHandover').value.trim();
-      fd.mailingMethod = S.mailMethod;
-      fd.postOfficeName = document.getElementById('postOffice').value.trim();
-      fd.mailingAddress = document.getElementById('mailAddress').value.trim();
-      fd.trackingNeeded = S.track;
+      const mail = buildMailData('mail');
+      fd.mailingMethod = mail.mailingMethod;
+      fd.postOfficeName = mail.postOfficeName;
+      fd.mailingAddress = mail.mailingAddress;
+      fd.trackingNeeded = mail.trackingNeeded;
     } else if(S.res==='commitment'){
       fd.commitmentFactors = S.facCommitment;
     } else if(S.res==='considering'){
