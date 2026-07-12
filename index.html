@@ -561,6 +561,11 @@
     function insertMcTemplate(targetId){
       const ta = document.getElementById(targetId);
       if(!ta) return;
+      // 既にテンプレのラベルが入っていたら何もしない（重複挿入防止）
+      if(ta.value.indexOf('性格：') !== -1 || ta.value.indexOf('講師へ：') !== -1 || ta.value.indexOf('希望コーチング日時：') !== -1){
+        ta.focus();
+        return;
+      }
       const cur = ta.value.trim();
       ta.value = cur ? cur + '\n' + MC_TEMPLATE : MC_TEMPLATE;
       ta.focus();
