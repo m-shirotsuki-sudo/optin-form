@@ -798,12 +798,18 @@
                      : document.getElementById('lostRef').value;
         if(!refVal.trim()){alert('振り返りを入力してください');return;}
         
+        // ▼ 契約日必須チェック（成約のみ）【v15.1で追加】
+        if(S.res==='closed'&&!document.getElementById('contD').value){alert('契約日を入力してください');document.getElementById('contD').style.borderColor='#EF4444';return;}
+        
         if(S.res==='closed'&&!vLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
         if(S.res==='closed'&&!S.receipt){alert('領収書の必要有無を選択してください');return;}
         // ▼ 郵送セクション必須チェック（成約のみ）【v15】
         if(S.res==='closed'&&!vMailSection('mail'))return;
       }
       if(S.ph==='convert_to_closed'){
+        // ▼ 契約日必須チェック（成約変更）【v15.1で追加】
+        if(!document.getElementById('convContD').value){alert('契約日を入力してください');document.getElementById('convContD').style.borderColor='#EF4444';return;}
+        
         if(!vConvLink()){alert('契約書リンクは正しいURL形式で入力してください');return;}
         if(!S.convReceipt){alert('領収書の必要有無を選択してください');return;}
         // ▼ 郵送セクション必須チェック（成約変更）【v15】
@@ -917,7 +923,7 @@
       document.querySelectorAll('.ro').forEach(e=>e.classList.remove('sel-b','sel-a'));
       document.getElementById('cav').style.background='';
       ['furiE','contLinkE','convLinkE'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-      ['furi','contLink','convLink'].forEach(id=>document.getElementById(id).style.borderColor='');
+      ['furi','contLink','convLink','contD','convContD'].forEach(id=>document.getElementById(id).style.borderColor='');
       ['payO','convPayO','commReD','consReD','actBaseOther'].forEach(id=>document.getElementById(id).classList.add('hidden'));
       ['mailPostOffice','mailOtherAddr','convMailPostOffice','convMailOtherAddr','mailZipE','convMailZipE'].forEach(id=>document.getElementById(id).classList.add('hidden'));
       ['mailZip','convMailZip'].forEach(id=>document.getElementById(id).style.borderColor='');
